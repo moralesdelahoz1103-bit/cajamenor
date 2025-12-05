@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlace - Caja Menor</title>
+    <!-- CSS Modular -->
+    <link rel="stylesheet" href="../static/css/variables.css">
+    <link rel="stylesheet" href="../static/css/reset.css">
+    <link rel="stylesheet" href="../static/css/components.css">
+    <link rel="stylesheet" href="../static/css/views/enlace-solicitudes.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="logo-icon">
+                <img src="../static/img/logotipo.png" alt="Fundación Santo Domingo"/>  
+            </div>
+            <div class="brand-info">
+                <h1>Caja Menor</h1>
+                <p>Sistema de Gestión</p>
+            </div>
+        </div>
+        <nav class="header-nav">
+            <a href="panel_solicitudes.html" class="nav-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+                Solicitante
+            </a>
+            <a href="enlace_solicitudes.html" class="nav-button active">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                </svg>
+                Enlace
+            </a>
+            <a href="gerente_solicitudes.html" class="nav-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+                Gerente
+            </a>
+        </nav>
+        <div class="header-user">
+            <div class="user-info">
+                <div class="user-name">Enlace Admin</div>
+                <div class="user-role">Aprobador</div>
+            </div>
+            <div class="user-avatar">EA</div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Solicitudes para Revisión</h1>
+            <p class="page-subtitle">Revisa y gestiona las solicitudes de caja menor</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="statsGridEnlace">
+            <div class="stat-card total">
+                <div class="stat-content">
+                    <h3>Total</h3>
+                    <div class="stat-value" id="statTotalEnlace">0</div>
+                </div>
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card pendientes">
+                <div class="stat-content">
+                    <h3>Pendientes</h3>
+                    <div class="stat-value" id="statPendientesEnlace">0</div>
+                </div>
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card aprobadas">
+                <div class="stat-content">
+                    <h3>Aprobadas</h3>
+                    <div class="stat-value" id="statAprobadasEnlace">0</div>
+                </div>
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="stat-card rechazadas">
+                <div class="stat-content">
+                    <h3>Rechazadas</h3>
+                    <div class="stat-value" id="statRechazadasEnlace">0</div>
+                </div>
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="15" y1="9" x2="9" y2="15"/>
+                        <line x1="9" y1="9" x2="15" y2="15"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Búsqueda</label>
+                    <input type="text" class="filter-input" id="busqueda" placeholder="Número o nombre de la solicitud...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Solicitante</label>
+                    <input type="text" class="filter-input" id="filtroSolicitante" list="listaSolicitantes" placeholder="Nombre del solicitante...">
+                    <datalist id="listaSolicitantes">
+                        <!-- Se llena dinámicamente -->
+                    </datalist>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Desde</label>
+                    <input type="date" class="filter-input" id="filtroFechaInicio">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Hasta</label>
+                    <input type="date" class="filter-input" id="filtroFechaFin">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-input" id="filtroEstado">
+                        <option value="">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Solicitud en gerencia">Solicitud en gerencia</option>
+                        <option value="En gerente">En gerente</option>
+                        <option value="En responsable">En responsable</option>
+                        <option value="Desembolsado">Desembolsado</option>
+                        <option value="Negado">Negado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Ordenar</label>
+                    <select class="filter-input filter-input-small" id="ordenar">
+                        <option value="">Ordenar por</option>
+                        <option value="reciente">Más reciente</option>
+                        <option value="antiguo">Más antiguo</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="align-self: end;">
+                    <button class="btn-clear-filters" id="btnLimpiarFiltros" style="display: none;" onclick="limpiarFiltrosEnlace()" title="Limpiar filtros">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                        Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solicitudes List -->
+        <div class="solicitudes-list" id="listaSolicitudes">
+            <!-- Se llena dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Modal: Detalle y Aprobación -->
+    <div class="modal-overlay" id="modalAprobacionSolicitud">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalAprobacionTitle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Detalle de Solicitud
+                </h2>
+                <button class="modal-close" onclick="cerrarModal('modalAprobacionSolicitud')">×</button>
+            </div>
+            <div class="modal-body" id="modalAprobacionContenido">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modular -->
+    <!-- Utilidades -->
+    <script src="../static/js/utils/config.js"></script>
+    <script src="../static/js/utils/helpers.js"></script>
+    <script src="../static/js/utils/storage.js"></script>
+    
+    <!-- Módulos de componentes -->
+    <script src="../static/js/modules/modales.js"></script>
+    <script src="../static/js/modules/progress-tracker.js"></script>
+    <script src="../static/js/modules/solicitud-card.js"></script>
+    
+    <!-- Vista específica -->
+    <script src="../static/js/views/enlace-solicitudes.js"></script>
+</body>
+</html>

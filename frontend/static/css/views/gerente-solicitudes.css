@@ -1,0 +1,1123 @@
+/* ========================================
+   VISTA: GERENTE SOLICITUDES (Aprobador Final)
+   ========================================
+   Archivo: gerente-solicitudes.css
+   Propósito: Estilos específicos para la vista
+   del panel de aprobación de gerencia
+   ======================================== */
+
+/* ========== STATS CARDS (4 columnas) ========== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    transition: all var(--transition-base);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.stat-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.stat-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card-icon.blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.stat-card-icon.yellow {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.stat-card-icon.green {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.stat-card-icon.red {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.stat-card-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.stat-card-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+/* Estilos alternativos para stat-card (compatibilidad HTML) */
+.stat-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.stat-content h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.stat-subtitle {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.stat-card.total .stat-icon {
+    background: #f3f4f6;
+    color: var(--color-text-secondary);
+}
+
+.stat-card.pendientes .stat-icon {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.stat-card.aprobadas .stat-icon {
+    background: #d1fae5;
+    color: #10b981;
+}
+
+.stat-card.rechazadas .stat-icon {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+/* ========== FILTROS CON DATALIST ========== */
+.filters-section {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr 0.8fr auto;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-input-small {
+    font-size: 13px;
+    padding: 10px 8px;
+}
+
+.btn-clear-filters {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--color-error);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+}
+
+.btn-clear-filters:hover {
+    background: #c62828;
+    transform: translateY(-1px);
+}
+
+.btn-clear-filters svg {
+    flex-shrink: 0;
+}
+
+.filter-input {
+    padding: 10px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    transition: all var(--transition-base);
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.filter-input::placeholder {
+    color: var(--color-text-secondary);
+}
+
+/* ========== TARJETAS DE SOLICITUDES ========== */
+.solicitudes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.solicitud-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.solicitud-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.solicitud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.solicitud-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.solicitud-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary-light);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-size: 20px;
+}
+
+.solicitud-title-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.solicitud-description {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+/* ========== DETALLES DE SOLICITUD ========== */
+.solicitud-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-icon {
+    color: var(--color-text-secondary);
+    font-size: 16px;
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+/* ========== PROGRESS TRACKER ========== */
+.progress-section {
+    background: var(--color-background);
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+
+.progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-tracker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 20px;
+}
+
+.progress-tracker::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: var(--color-border);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.progress-step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+}
+
+.progress-step.active .progress-step-circle {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.progress-step.completed .progress-step-circle {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: white;
+}
+
+.progress-step.completed .progress-step-circle svg {
+    display: none;
+}
+
+.progress-step.completed .progress-step-circle::after {
+    content: '✓';
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.progress-step.rejected .progress-step-circle {
+    background: var(--color-error);
+    border-color: var(--color-error);
+    color: white;
+    animation: pulse-error 2s infinite;
+}
+
+.progress-step.rejected .progress-step-label {
+    color: var(--color-error);
+    font-weight: 600;
+}
+
+@keyframes pulse-error {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+}
+
+.progress-step-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    max-width: 80px;
+}
+
+.progress-step.active .progress-step-label {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* ========== ACCIONES DE APROBACIÓN ========== */
+.approval-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.approval-actions .btn {
+    flex: 1;
+}
+
+/* ========== ESTADOS VACÍOS ========== */
+.empty-state {
+    background: var(--color-surface);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 60px 40px;
+    text-align: center;
+}
+
+.empty-state-icon {
+    margin: 0 auto 20px;
+    opacity: 0.3;
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    
+    .solicitud-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .solicitud-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .progress-tracker {
+        padding: 0 10px;
+    }
+    
+    .approval-actions {
+        flex-direction: column;
+    }
+}
+
+/* ========== STATS CARDS (4 columnas) ========== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    transition: all var(--transition-base);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.stat-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.stat-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card-icon.blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.stat-card-icon.yellow {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.stat-card-icon.green {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.stat-card-icon.red {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.stat-card-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.stat-card-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+/* Estilos alternativos para stat-card (compatibilidad HTML) */
+.stat-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.stat-content h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.stat-subtitle {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Colores específicos de cada stat-card */
+.stat-card.total .stat-icon {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.stat-card.pendientes .stat-icon {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.stat-card.aprobadas .stat-icon {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.stat-card.rechazadas .stat-icon {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* ========== FILTERS SECTION ========== */
+.filters-section {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.filter-input,
+.filter-select {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    transition: all var(--transition-base);
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-input::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+.filter-input-small {
+    max-width: 200px;
+}
+
+.btn-clear-filters {
+    height: 40px;
+    padding: 0 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-clear-filters:hover {
+    background: var(--color-background);
+    border-color: var(--color-text-tertiary);
+    color: var(--color-text-primary);
+}
+
+.btn-clear-filters svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========== SOLICITUDES LIST ========== */
+.solicitudes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ========== TARJETAS DE SOLICITUD ========== */
+.solicitud-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all var(--transition-base);
+}
+
+.solicitud-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
+}
+
+.solicitud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.solicitud-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.solicitud-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--color-primary-light);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    font-size: 20px;
+}
+
+.solicitud-title-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.solicitud-title-info p {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.solicitud-description {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+/* ========== DETALLES DE SOLICITUD ========== */
+.solicitud-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-icon {
+    color: var(--color-text-secondary);
+    font-size: 16px;
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+/* ========== PROGRESS TRACKER ========== */
+.progress-section {
+    background: var(--color-background);
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+
+.progress-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.progress-tracker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 20px;
+}
+
+.progress-tracker::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: var(--color-border);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.progress-step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-tertiary);
+    transition: all var(--transition-base);
+}
+
+.progress-step.completed .progress-step-circle,
+.progress-step.active .progress-step-circle {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: white;
+}
+
+.progress-step.rejected .progress-step-circle {
+    background: var(--color-error);
+    border-color: var(--color-error);
+    color: white;
+}
+
+.progress-step-label {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    max-width: 80px;
+}
+
+.progress-step.completed .progress-step-label,
+.progress-step.active .progress-step-label {
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.progress-step.rejected .progress-step-label {
+    color: var(--color-error);
+    font-weight: 600;
+}
+
+/* ========== FOOTER DE SOLICITUD ========== */
+.solicitud-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+    }
+
+    .filters-section {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header {
+        padding: 16px 0;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    .page-subtitle {
+        font-size: 13px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .filter-input-small {
+        max-width: 100%;
+    }
+}
+
+/* ========== ESTADOS VACÍOS ========== */
+.estado-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.estado-vacio-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: var(--color-text-tertiary);
+}
+
+.estado-vacio-titulo {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.estado-vacio-mensaje {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* ========== MODAL ESPECÍFICOS ========== */
+.modal-aprobacion-acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-aprobacion-acciones .btn {
+    flex: 1;
+}
+
+/* Área de observaciones/comentarios */
+.observaciones-field {
+    margin-top: 20px;
+}
+
+.observaciones-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.observaciones-field textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    resize: vertical;
+    transition: all var(--transition-base);
+}
+
+.observaciones-field textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.observaciones-field textarea::placeholder {
+    color: var(--color-text-tertiary);
+}
+
+/* ========== ANIMACIONES ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.solicitudes-list > * {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ========== UTILIDADES ========== */
+.text-center {
+    text-align: center;
+}
+
+.mt-1 {
+    margin-top: 8px;
+}
+
+.mt-2 {
+    margin-top: 16px;
+}
+
+.mt-3 {
+    margin-top: 24px;
+}
+
+.mb-1 {
+    margin-bottom: 8px;
+}
+
+.mb-2 {
+    margin-bottom: 16px;
+}
+
+.mb-3 {
+    margin-bottom: 24px;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.gap-1 {
+    gap: 8px;
+}
+
+.gap-2 {
+    gap: 16px;
+}
+
+.gap-3 {
+    gap: 24px;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.w-full {
+    width: 100%;
+}
