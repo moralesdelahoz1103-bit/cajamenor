@@ -84,6 +84,9 @@ function obtenerInfoEstado(estado, historial = []) {
         case ESTADOS.EN_RESPONSABLE:
             // Está en caja/responsable
             return { index: 2, stepId: 'caja' };
+        case ESTADOS.RESPONSABLE_APROBADO:
+            // Aprobado en caja, pendiente de desembolso
+            return { index: 2, stepId: 'caja' };
         case ESTADOS.DESEMBOLSADO:
             // Proceso completado
             return { index: 3, stepId: 'desembolso' };

@@ -23,10 +23,18 @@ function inicializarGerenteSolicitudes() {
 }
 
 /**
- * Carga los datos desde localStorage
+ * Carga los datos desde localStorage y filtra solo las de gerente
  */
 function cargarDatos() {
-    solicitudesData = cargarDeLocalStorage();
+    const todasSolicitudes = cargarDeLocalStorage();
+    // Mostrar solicitudes que están en gerencia o que ya fueron procesadas por gerencia
+    solicitudesData = todasSolicitudes.filter(s => 
+        s.estado === ESTADOS.SOLICITUD_GERENCIA || 
+        s.estado === ESTADOS.EN_GERENTE ||
+        s.estado === ESTADOS.EN_RESPONSABLE ||
+        s.estado === ESTADOS.DESEMBOLSADO ||
+        (s.estado === ESTADOS.NEGADO && s.historial?.some(h => h.area?.toLowerCase().includes('gerente')))
+    );
 }
 
 /**
@@ -52,18 +60,39 @@ function renderizarSolicitudesGerente(solicitudes = solicitudesData) {
  * Actualiza las estadísticas del dashboard de gerente
  */
 function actualizarEstadisticasGerente() {
-    const total = solicitudesData.length;
-    const pendientes = solicitudesData.filter(s => 
+    // Obtener TODAS las solicitudes para contar histórico
+    const todasSolicitudes = cargarDeLocalStorage();
+    
+    // Total de solicitudes que han pasado por gerencia
+    const solicitudesGerencia = todasSolicitudes.filter(s => 
+        s.estado === ESTADOS.SOLICITUD_GERENCIA || 
+        s.estado === ESTADOS.EN_GERENTE ||
+        s.estado === ESTADOS.EN_RESPONSABLE ||
+        s.estado === ESTADOS.DESEMBOLSADO ||
+        (s.estado === ESTADOS.NEGADO && s.historial?.some(h => h.area?.toLowerCase().includes('gerente')))
+    );
+    
+    const total = solicitudesGerencia.length;
+    
+    // Pendientes: solo las que están en SOLICITUD_GERENCIA o EN_GERENTE
+    const pendientes = solicitudesGerencia.filter(s => 
         s.estado === ESTADOS.SOLICITUD_GERENCIA || 
         s.estado === ESTADOS.EN_GERENTE
     ).length;
-    const aprobadas = solicitudesData.filter(s => 
+    
+    // Aprobadas: las que gerente aprobó y pasaron a responsable o fueron desembolsadas
+    const aprobadas = solicitudesGerencia.filter(s => 
         s.estado === ESTADOS.EN_RESPONSABLE ||
         s.estado === ESTADOS.DESEMBOLSADO
     ).length;
-    const rechazadas = solicitudesData.filter(s => s.estado === ESTADOS.NEGADO).length;
     
-    // Actualizar valores en el DOM
+    // Rechazadas: las que gerente rechazó (tienen en historial rechazo de gerente)
+    const rechazadas = solicitudesGerencia.filter(s => 
+        s.estado === ESTADOS.NEGADO && 
+        s.historial?.some(h => h.area?.toLowerCase().includes('gerente') && h.area?.toLowerCase().includes('rechaz'))
+    ).length;
+    
+    // Actualizar valores en el DOM (con sufijo Gerente)
     const elementos = {
         'statTotalGerente': total,
         'statPendientesGerente': pendientes,
@@ -82,18 +111,12 @@ function actualizarEstadisticasGerente() {
  */
 function configurarFiltrosGerente() {
     const inputBusqueda = document.getElementById('busqueda');
-    const inputSolicitante = document.getElementById('filtroSolicitante');
     const inputFechaInicio = document.getElementById('filtroFechaInicio');
     const inputFechaFin = document.getElementById('filtroFechaFin');
     const selectEstado = document.getElementById('filtroEstado');
-    const selectOrden = document.getElementById('ordenar');
     
     if (inputBusqueda) {
         inputBusqueda.addEventListener('input', debounce(aplicarFiltrosGerente, 300));
-    }
-    
-    if (inputSolicitante) {
-        inputSolicitante.addEventListener('input', debounce(aplicarFiltrosGerente, 300));
     }
     
     if (inputFechaInicio) {
@@ -107,10 +130,6 @@ function configurarFiltrosGerente() {
     if (selectEstado) {
         selectEstado.addEventListener('change', aplicarFiltrosGerente);
     }
-    
-    if (selectOrden) {
-        selectOrden.addEventListener('change', aplicarFiltrosGerente);
-    }
 }
 
 /**
@@ -118,11 +137,9 @@ function configurarFiltrosGerente() {
  */
 function aplicarFiltrosGerente() {
     const busqueda = document.getElementById('busqueda')?.value.toLowerCase() || '';
-    const solicitante = document.getElementById('filtroSolicitante')?.value.toLowerCase() || '';
     const fechaInicio = document.getElementById('filtroFechaInicio')?.value || '';
     const fechaFin = document.getElementById('filtroFechaFin')?.value || '';
     const estadoSeleccionado = document.getElementById('filtroEstado')?.value || '';
-    const orden = document.getElementById('ordenar')?.value || '';
     
     let filtradas = [...solicitudesData];
     
@@ -131,13 +148,6 @@ function aplicarFiltrosGerente() {
         filtradas = filtradas.filter(s => 
             s.numero.toLowerCase().includes(busqueda) ||
             s.nombre.toLowerCase().includes(busqueda)
-        );
-    }
-    
-    // Filtro de solicitante
-    if (solicitante) {
-        filtradas = filtradas.filter(s => 
-            s.solicitante.toLowerCase().includes(solicitante)
         );
     }
     
@@ -157,19 +167,10 @@ function aplicarFiltrosGerente() {
         filtradas = filtradas.filter(s => s.estado === estadoSeleccionado);
     }
     
-    // Ordenamiento
-    if (orden) {
-        filtradas.sort((a, b) => {
-            const fechaA = convertirFecha(a.fecha);
-            const fechaB = convertirFecha(b.fecha);
-            return orden === 'reciente' ? fechaB - fechaA : fechaA - fechaB;
-        });
-    }
-    
     // Mostrar/ocultar botón de limpiar filtros
     const btnLimpiar = document.getElementById('btnLimpiarFiltros');
     if (btnLimpiar) {
-        const hayFiltros = busqueda || solicitante || fechaInicio || fechaFin || estadoSeleccionado || orden;
+        const hayFiltros = busqueda || fechaInicio || fechaFin || estadoSeleccionado;
         btnLimpiar.style.display = hayFiltros ? 'flex' : 'none';
     }
     
@@ -314,15 +315,7 @@ function verDetalleAprobacion(id) {
             </div>
         ` : ''}
         
-        ${solicitud.estado === ESTADOS.NEGADO && solicitud.observaciones ? `
-            <div class="alert alert-error" style="margin-top: 16px;">
-                <span class="alert-icon">${ICONOS.accion.advertencia}</span>
-                <div>
-                    <div style="font-weight: 600; margin-bottom: 4px;">Motivo del rechazo:</div>
-                    ${solicitud.observaciones}
-                </div>
-            </div>
-        ` : ''}
+        ¿
     `;
     
     document.getElementById('modalAprobacionContenido').innerHTML = contenido;
@@ -340,14 +333,14 @@ function aprobarSolicitud() {
     
     const fechaHora = obtenerFechaHoraActual();
     
-    // Avanzar al siguiente estado
+    // Avanzar al siguiente estado (EN_RESPONSABLE)
     solicitud.estado = ESTADOS.EN_RESPONSABLE;
     solicitud.observaciones = '';
     
     // Registrar en historial
     if (!solicitud.historial) solicitud.historial = [];
     solicitud.historial.push({
-        area: 'Gerencia',
+        area: 'Gerente - Solicitud aprobada',
         estado: ESTADOS.EN_RESPONSABLE,
         fecha: fechaHora.fecha,
         hora: fechaHora.hora,
@@ -355,12 +348,21 @@ function aprobarSolicitud() {
         usuario: 'Gerente General'
     });
     
-    guardarEnLocalStorage(solicitudesData);
+    // Guardar en localStorage con TODAS las solicitudes
+    const todasSolicitudes = cargarDeLocalStorage();
+    const index = todasSolicitudes.findIndex(s => s.id === solicitud.id);
+    if (index !== -1) {
+        todasSolicitudes[index] = solicitud;
+        guardarEnLocalStorage(todasSolicitudes);
+    }
+    
+    // Recargar datos filtrados
+    cargarDatos();
     renderizarSolicitudesGerente();
     actualizarEstadisticasGerente();
     cerrarModal('modalAprobacionSolicitud');
     
-    alert('Solicitud aprobada exitosamente. La solicitud ha avanzado a la siguiente fase.');
+    alert('Solicitud aprobada exitosamente. La solicitud ha sido enviada a Responsable de Caja.');
     solicitudActualId = null;
 }
 
@@ -432,8 +434,9 @@ function cerrarModalRechazo() {
 }
 
 /**
- * Muestra/oculta el campo de otro motivo
+ * Confirma el rechazo con el motivo seleccionado
  */
+// Alterna la visibilidad del campo "Otro motivo"
 function toggleOtroMotivo() {
     const select = document.getElementById('selectMotivoRechazo');
     const container = document.getElementById('otroMotivoContainer');
@@ -443,9 +446,6 @@ function toggleOtroMotivo() {
     }
 }
 
-/**
- * Confirma el rechazo con el motivo seleccionado
- */
 function confirmarRechazo() {
     const select = document.getElementById('selectMotivoRechazo');
     const inputOtro = document.getElementById('inputOtroMotivo');
@@ -476,7 +476,7 @@ function confirmarRechazo() {
     // Registrar en historial
     if (!solicitud.historial) solicitud.historial = [];
     solicitud.historial.push({
-        area: 'Gerencia - Solicitud rechazada',
+        area: 'Gerente - Solicitud rechazada',
         estado: ESTADOS.NEGADO,
         fecha: fechaHora.fecha,
         hora: fechaHora.hora,
@@ -485,7 +485,16 @@ function confirmarRechazo() {
         observaciones: motivo
     });
     
-    guardarEnLocalStorage(solicitudesData);
+    // Guardar en localStorage con TODAS las solicitudes
+    const todasSolicitudes = cargarDeLocalStorage();
+    const index = todasSolicitudes.findIndex(s => s.id === solicitud.id);
+    if (index !== -1) {
+        todasSolicitudes[index] = solicitud;
+        guardarEnLocalStorage(todasSolicitudes);
+    }
+    
+    // Recargar datos filtrados
+    cargarDatos();
     renderizarSolicitudesGerente();
     actualizarEstadisticasGerente();
     cerrarModalRechazo();
@@ -516,7 +525,7 @@ function aprobarSolicitudDirecta(id) {
         // Registrar en historial
         if (!solicitud.historial) solicitud.historial = [];
         solicitud.historial.push({
-            area: 'Gerencia - Solicitud aprobada',
+            area: 'Gerente - Solicitud aprobada',
             estado: ESTADOS.EN_RESPONSABLE,
             fecha: fechaHora.fecha,
             hora: fechaHora.hora,
@@ -524,7 +533,16 @@ function aprobarSolicitudDirecta(id) {
             usuario: 'Gerente General'
         });
         
-        guardarEnLocalStorage(solicitudesData);
+        // Guardar en localStorage con TODAS las solicitudes
+        const todasSolicitudes = cargarDeLocalStorage();
+        const index = todasSolicitudes.findIndex(s => s.id === solicitud.id);
+        if (index !== -1) {
+            todasSolicitudes[index] = solicitud;
+            guardarEnLocalStorage(todasSolicitudes);
+        }
+        
+        // Recargar datos filtrados
+        cargarDatos();
         renderizarSolicitudesGerente();
         actualizarEstadisticasGerente();
         
@@ -569,17 +587,8 @@ function crearHistorialTimeline(historial) {
             </svg>
         `;
         
-        // Determinar el texto del área con status
-        let areaText = evento.area;
-        if (evento.area.toLowerCase().includes('gerencia')) {
-            if (esRechazo) {
-                areaText = 'Gerencia - Solicitud rechazada';
-            } else if (esAprobacion) {
-                areaText = 'Gerencia - Solicitud aprobada';
-            } else {
-                areaText = 'Gerencia';
-            }
-        }
+        // Usar la acción registrada en el historial (ej. "Gerente - Solicitud aprobada", "Gerente - Desembolsado")
+        const areaText = evento.area || 'Historial';
         
         return `
         <div class="historial-item" style="display: flex; gap: 16px; padding: 12px 0; ${index !== historialOrdenado.length - 1 ? 'border-bottom: 1px solid var(--color-border);' : ''}">
@@ -609,7 +618,9 @@ function crearHistorialTimeline(historial) {
     }).join('');
 }
 
-
+/**
+ * Llena la lista de solicitantes para el filtro
+ */
 
 /**
  * Limpia todos los filtros y muestra todas las solicitudes

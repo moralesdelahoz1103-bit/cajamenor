@@ -19,6 +19,7 @@ const ESTADOS = {
     SOLICITUD_GERENCIA: 'Solicitud en gerencia',
     EN_GERENTE: 'En gerente',
     EN_RESPONSABLE: 'En responsable',
+    RESPONSABLE_APROBADO: 'Aprobado para desembolso',
     DESEMBOLSADO: 'Desembolsado',
     NEGADO: 'Negado'
 };
@@ -30,6 +31,7 @@ const CLASES_ESTADO = {
     [ESTADOS.SOLICITUD_GERENCIA]: 'pendiente-gerencia',
     [ESTADOS.EN_GERENTE]: 'pendiente-gerencia',
     [ESTADOS.EN_RESPONSABLE]: 'pendiente-gerencia',
+    [ESTADOS.RESPONSABLE_APROBADO]: 'pendiente-gerencia',
     [ESTADOS.DESEMBOLSADO]: 'desembolsado'
 };
 

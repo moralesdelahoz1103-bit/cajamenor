@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerente - Caja Menor</title>
+    <title>Responsable de Caja - Caja Menor</title>
     <!-- CSS Modular -->
     <link rel="stylesheet" href="../static/css/variables.css">
     <link rel="stylesheet" href="../static/css/reset.css">
     <link rel="stylesheet" href="../static/css/components.css">
-    <link rel="stylesheet" href="../static/css/views/gerente-solicitudes.css">
+    <link rel="stylesheet" href="../static/css/views/responsable-solicitudes.css">
 </head>
 <body>
     <!-- Header Component -->
     <app-header 
-        active-page="gerente_solicitudes" 
-        user-name="Gerente General" 
-        user-role="Aprobador Final"
-        user-initials="GG">
+        active-page="responsable_solicitudes" 
+        user-name="Responsable de Caja" 
+        user-role="Desembolsos"
+        user-initials="RC">
     </app-header>
 
     <!-- Main Container -->
@@ -28,10 +28,10 @@
         </div>
 
         <!-- Stats Cards Component -->
-        <app-stats-cards view-type="gerente"></app-stats-cards>
+        <app-stats-cards view-type="responsable"></app-stats-cards>
 
         <!-- Filters Component -->
-        <app-filters-section view-type="gerente" clear-function="limpiarFiltrosGerente"></app-filters-section>
+        <app-filters-section view-type="responsable" clear-function="limpiarFiltrosResponsable"></app-filters-section>
 
         <!-- Solicitudes List Component -->
         <app-solicitudes-list></app-solicitudes-list>
@@ -55,6 +55,6 @@
     <script src="../static/js/modules/solicitud-card.js"></script>
     
     <!-- Vista específica -->
-    <script src="../static/js/views/gerente-solicitudes.js"></script>
+    <script src="../static/js/views/responsable-solicitudes.js"></script>
 </body>
 </html>

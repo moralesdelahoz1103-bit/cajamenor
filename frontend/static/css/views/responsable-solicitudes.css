@@ -1,9 +1,9 @@
 /* ========================================
-   VISTA: GERENTE SOLICITUDES (Aprobador Final)
+   VISTA: RESPONSABLE DE CAJA
    ========================================
-   Archivo: gerente-solicitudes.css
+   Archivo: responsable-solicitudes.css
    Propósito: Estilos específicos para la vista
-   del panel de aprobación de gerencia
+   del responsable de caja - desembolsos
    ======================================== */
 
 /* ========== STATS CARDS (4 columnas) ========== */
@@ -21,7 +21,7 @@
 /* ========== PROGRESS TRACKER ========== */
 /* Estilos moved to components.css */
 
-/* ========== ACCIONES DE APROBACIÓN ========== */
+/* ========== ACCIONES DE DESEMBOLSO ========== */
 .approval-actions {
     display: flex;
     gap: 12px;

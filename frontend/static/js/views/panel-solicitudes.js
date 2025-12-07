@@ -84,7 +84,6 @@ function configurarFiltros() {
     const inputFechaInicio = document.getElementById('filtroFechaInicio');
     const inputFechaFin = document.getElementById('filtroFechaFin');
     const selectEstado = document.getElementById('filtroEstado');
-    const selectOrden = document.getElementById('ordenar');
     
     if (inputBusqueda) {
         inputBusqueda.addEventListener('input', debounce(aplicarFiltros, 300));
@@ -101,10 +100,6 @@ function configurarFiltros() {
     if (selectEstado) {
         selectEstado.addEventListener('change', aplicarFiltros);
     }
-    
-    if (selectOrden) {
-        selectOrden.addEventListener('change', aplicarFiltros);
-    }
 }
 
 /**
@@ -115,7 +110,6 @@ function aplicarFiltros() {
     const fechaInicio = document.getElementById('filtroFechaInicio')?.value || '';
     const fechaFin = document.getElementById('filtroFechaFin')?.value || '';
     const estadoSeleccionado = document.getElementById('filtroEstado')?.value || '';
-    const orden = document.getElementById('ordenar')?.value || '';
     
     let filtradas = [...solicitudesData];
     
@@ -141,22 +135,13 @@ function aplicarFiltros() {
     // Mostrar/ocultar botón de limpiar filtros
     const btnLimpiar = document.getElementById('btnLimpiarFiltros');
     if (btnLimpiar) {
-        const hayFiltros = busqueda || fechaInicio || fechaFin || estadoSeleccionado || orden;
+        const hayFiltros = busqueda || fechaInicio || fechaFin || estadoSeleccionado;
         btnLimpiar.style.display = hayFiltros ? 'flex' : 'none';
     }
     
     // Filtro de estado
     if (estadoSeleccionado) {
         filtradas = filtradas.filter(s => s.estado === estadoSeleccionado);
-    }
-    
-    // Ordenamiento
-    if (orden) {
-        filtradas.sort((a, b) => {
-            const fechaA = convertirFecha(a.fecha);
-            const fechaB = convertirFecha(b.fecha);
-            return orden === 'reciente' ? fechaB - fechaA : fechaA - fechaB;
-        });
     }
     
     renderizarSolicitudes(filtradas);

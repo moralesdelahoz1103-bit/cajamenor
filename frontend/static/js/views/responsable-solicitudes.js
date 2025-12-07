@@ -1,9 +1,9 @@
 /* ========================================
-   VISTA: ENLACE SOLICITUDES (Aprobador)
+   VISTA: RESPONSABLE DE CAJA
    ========================================
-   Archivo: enlace-solicitudes.js
+   Archivo: responsable-solicitudes.js
    Propósito: Lógica específica para la vista
-   del panel del aprobador/enlace
+   del responsable de caja - desembolsos
    ======================================== */
 
 // Variable global para almacenar solicitudes
@@ -11,13 +11,13 @@ let solicitudesData = [];
 let solicitudActualId = null;
 
 /**
- * Inicializa la vista de enlace/aprobación
+ * Inicializa la vista de responsable de caja
  */
-function inicializarEnlaceSolicitudes() {
+function inicializarResponsableSolicitudes() {
     cargarDatos();
-    renderizarSolicitudesEnlace();
-    actualizarEstadisticasEnlace();
-    configurarFiltrosEnlace();
+    renderizarSolicitudesResponsable();
+    actualizarEstadisticasResponsable();
+    configurarFiltrosResponsable();
     llenarListaSolicitantes();
     inicializarEventosModales();
 }
@@ -26,14 +26,21 @@ function inicializarEnlaceSolicitudes() {
  * Carga los datos desde localStorage
  */
 function cargarDatos() {
-    solicitudesData = cargarDeLocalStorage();
+    const todasSolicitudes = cargarDeLocalStorage();
+    // Solo mostrar solicitudes aprobadas por gerente o ya gestionadas por responsable
+    solicitudesData = todasSolicitudes.filter(s => 
+        s.estado === ESTADOS.EN_RESPONSABLE ||
+        s.estado === ESTADOS.RESPONSABLE_APROBADO ||
+        s.estado === ESTADOS.DESEMBOLSADO ||
+        (s.estado === ESTADOS.NEGADO && s.historial?.some(h => h.area?.toLowerCase().includes('responsable')))
+    );
 }
 
 /**
- * Renderiza todas las solicitudes para vista de enlace
+ * Renderiza todas las solicitudes para vista de responsable
  * @param {Array} solicitudes - Array de solicitudes a renderizar (opcional)
  */
-function renderizarSolicitudesEnlace(solicitudes = solicitudesData) {
+function renderizarSolicitudesResponsable(solicitudes = solicitudesData) {
     const container = document.getElementById('listaSolicitudes');
     if (!container) return;
     
@@ -45,29 +52,28 @@ function renderizarSolicitudesEnlace(solicitudes = solicitudesData) {
         return;
     }
     
-    container.innerHTML = solicitudes.map(sol => crearTarjetaSolicitudEnlace(sol)).join('');
+    container.innerHTML = solicitudes.map(sol => crearTarjetaSolicitudResponsable(sol)).join('');
 }
 
 /**
- * Actualiza las estadísticas del dashboard de enlace
+ * Actualiza las estadísticas del dashboard de responsable
  */
-function actualizarEstadisticasEnlace() {
+function actualizarEstadisticasResponsable() {
     const total = solicitudesData.length;
-    const pendientes = solicitudesData.filter(s => s.estado === ESTADOS.PENDIENTE).length;
-    const aprobadas = solicitudesData.filter(s => 
-        s.estado === ESTADOS.SOLICITUD_GERENCIA || 
-        s.estado === ESTADOS.EN_GERENTE || 
-        s.estado === ESTADOS.EN_RESPONSABLE ||
-        s.estado === ESTADOS.DESEMBOLSADO
+    const pendientes = solicitudesData.filter(s => 
+        s.estado === ESTADOS.EN_RESPONSABLE || s.estado === ESTADOS.RESPONSABLE_APROBADO
     ).length;
-    const rechazadas = solicitudesData.filter(s => s.estado === ESTADOS.NEGADO).length;
+    const aprobadas = solicitudesData.filter(s => s.estado === ESTADOS.DESEMBOLSADO).length;
+    const rechazadas = solicitudesData.filter(s => 
+        s.estado === ESTADOS.NEGADO && s.historial?.some(h => h.area?.toLowerCase().includes('responsable'))
+    ).length;
     
-    // Actualizar valores en el DOM (con sufijo Enlace)
+    // Actualizar valores en el DOM (con sufijo Responsable)
     const elementos = {
-        'statTotalEnlace': total,
-        'statPendientesEnlace': pendientes,
-        'statAprobadasEnlace': aprobadas,
-        'statRechazadasEnlace': rechazadas
+        'statTotalResponsable': total,
+        'statPendientesResponsable': pendientes,
+        'statAprobadasResponsable': aprobadas,
+        'statRechazadasResponsable': rechazadas
     };
     
     Object.entries(elementos).forEach(([id, valor]) => {
@@ -77,35 +83,35 @@ function actualizarEstadisticasEnlace() {
 }
 
 /**
- * Configura los filtros específicos de la vista de enlace
+ * Configura los filtros específicos de la vista de responsable
  */
-function configurarFiltrosEnlace() {
+function configurarFiltrosResponsable() {
     const inputBusqueda = document.getElementById('busqueda');
     const inputFechaInicio = document.getElementById('filtroFechaInicio');
     const inputFechaFin = document.getElementById('filtroFechaFin');
     const selectEstado = document.getElementById('filtroEstado');
     
     if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', debounce(aplicarFiltrosEnlace, 300));
+        inputBusqueda.addEventListener('input', debounce(aplicarFiltrosResponsable, 300));
     }
     
     if (inputFechaInicio) {
-        inputFechaInicio.addEventListener('change', aplicarFiltrosEnlace);
+        inputFechaInicio.addEventListener('change', aplicarFiltrosResponsable);
     }
     
     if (inputFechaFin) {
-        inputFechaFin.addEventListener('change', aplicarFiltrosEnlace);
+        inputFechaFin.addEventListener('change', aplicarFiltrosResponsable);
     }
     
     if (selectEstado) {
-        selectEstado.addEventListener('change', aplicarFiltrosEnlace);
+        selectEstado.addEventListener('change', aplicarFiltrosResponsable);
     }
 }
 
 /**
  * Aplica los filtros y renderiza
  */
-function aplicarFiltrosEnlace() {
+function aplicarFiltrosResponsable() {
     const busqueda = document.getElementById('busqueda')?.value.toLowerCase() || '';
     const fechaInicio = document.getElementById('filtroFechaInicio')?.value || '';
     const fechaFin = document.getElementById('filtroFechaFin')?.value || '';
@@ -144,7 +150,7 @@ function aplicarFiltrosEnlace() {
         btnLimpiar.style.display = hayFiltros ? 'flex' : 'none';
     }
     
-    renderizarSolicitudesEnlace(filtradas);
+    renderizarSolicitudesResponsable(filtradas);
 }
 
 /**
@@ -272,7 +278,7 @@ function verDetalleAprobacion(id) {
             </div>
         ` : ''}
         
-        ${solicitud.estado === ESTADOS.PENDIENTE ? `
+        ${solicitud.estado === ESTADOS.EN_RESPONSABLE ? `
             <div style="display: flex; gap: 12px; margin-top: 24px;">
                 <button class="btn btn-secondary" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" onclick="mostrarModalRechazo()">
                     ${ICONOS.accion.rechazar}
@@ -284,46 +290,159 @@ function verDetalleAprobacion(id) {
                 </button>
             </div>
         ` : ''}
-        
 
+        ${solicitud.estado === ESTADOS.RESPONSABLE_APROBADO ? `
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-secondary" style="flex: 1; color: var(--color-error); border-color: var(--color-error);" onclick="mostrarModalRechazo()">
+                    ${ICONOS.accion.rechazar}
+                    Rechazar solicitud
+                </button>
+                <button class="btn btn-success" style="flex: 1; background: var(--color-success); border-color: var(--color-success);" onclick="mostrarModalDesembolso()">
+                    ${ICONOS.accion.aprobar}
+                    Desembolsado
+                </button>
+            </div>
+        ` : ''}
+        
+        ${solicitud.estado === ESTADOS.NEGADO && solicitud.observaciones ? `
+            <div class="alert alert-error" style="margin-top: 16px;">
+                <span class="alert-icon">${ICONOS.accion.advertencia}</span>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 4px;">Motivo del rechazo:</div>
+                    ${solicitud.observaciones}
+                </div>
+            </div>
+        ` : ''}
     `;
     
     document.getElementById('modalAprobacionContenido').innerHTML = contenido;
     abrirModal('modalAprobacionSolicitud');
 }
 
-/**
- * Aprueba la solicitud actual
- */
-function aprobarSolicitud() {
-    if (!solicitudActualId) return;
-    
-    const solicitud = solicitudesData.find(s => s.id === solicitudActualId);
+// Aprueba y deja lista para desembolso
+function aprobarSolicitud(id = null) {
+    const targetId = id || solicitudActualId;
+    if (!targetId) return;
+    const solicitud = solicitudesData.find(s => s.id === targetId);
     if (!solicitud) return;
-    
+    if (solicitud.estado !== ESTADOS.EN_RESPONSABLE) {
+        alert('Solo puedes aprobar solicitudes en estado EN_RESPONSABLE.');
+        return;
+    }
     const fechaHora = obtenerFechaHoraActual();
-    
-    // Avanzar al siguiente estado
-    solicitud.estado = ESTADOS.SOLICITUD_GERENCIA;
+    solicitud.estado = ESTADOS.RESPONSABLE_APROBADO;
     solicitud.observaciones = '';
-    
-    // Registrar en historial
     if (!solicitud.historial) solicitud.historial = [];
     solicitud.historial.push({
-        area: 'Enlace',
-        estado: ESTADOS.SOLICITUD_GERENCIA,
+        area: 'Responsable - Aprobada para desembolso',
+        estado: ESTADOS.RESPONSABLE_APROBADO,
         fecha: fechaHora.fecha,
         hora: fechaHora.hora,
         timestamp: fechaHora.timestamp,
-        usuario: solicitud.aprobador || 'Enlace'
+        usuario: 'Responsable de Caja'
+    });
+    const todasSolicitudes = cargarDeLocalStorage();
+    const index = todasSolicitudes.findIndex(s => s.id === solicitud.id);
+    if (index !== -1) {
+        todasSolicitudes[index] = solicitud;
+        guardarEnLocalStorage(todasSolicitudes);
+    } else {
+        guardarEnLocalStorage(solicitudesData);
+    }
+    cargarDatos();
+    renderizarSolicitudesResponsable();
+    actualizarEstadisticasResponsable();
+    cerrarModal('modalAprobacionSolicitud');
+    alert('Solicitud aprobada para desembolso.');
+    solicitudActualId = null;
+}
+
+/**
+ * Aprueba la solicitud actual
+ */
+function mostrarModalDesembolso(id = null) {
+    solicitudActualId = id || solicitudActualId;
+    const solicitud = solicitudesData.find(s => s.id === solicitudActualId);
+    if (!solicitud) return;
+    
+    const modalHTML = `
+        <div class="modal-overlay" id="modalDesembolso" style="display: flex;">
+            <div class="modal" style="max-width: 420px;">
+                <div class="modal-header">
+                    <h2 class="modal-title">
+                        ${ICONOS.accion.aprobar}
+                        Confirmar desembolso
+                    </h2>
+                    <button class="modal-close" onclick="cerrarModalDesembolso()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 12px; color: var(--color-text-secondary);">
+                        Confirma que entregaste el dinero de la solicitud <strong>${solicitud.numero}</strong>.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalDesembolso()">Cancelar</button>
+                    <button type="button" class="btn btn-success" style="background: var(--color-success); border-color: var(--color-success);" onclick="confirmarDesembolso()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    `;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = modalHTML;
+    document.body.appendChild(tempDiv.firstElementChild);
+}
+
+function cerrarModalDesembolso() {
+    const modal = document.getElementById('modalDesembolso');
+    if (modal) modal.remove();
+}
+
+function confirmarDesembolso() {
+    marcarDesembolsado();
+}
+
+function marcarDesembolsado(id = null) {
+    const targetId = id || solicitudActualId;
+    if (!targetId) return;
+    const solicitud = solicitudesData.find(s => s.id === targetId);
+    if (!solicitud) return;
+    
+    if (solicitud.estado !== ESTADOS.RESPONSABLE_APROBADO) {
+        alert('Solo puedes desembolsar solicitudes aprobadas para desembolso.');
+        return;
+    }
+    
+    const fechaHora = obtenerFechaHoraActual();
+    
+    solicitud.estado = ESTADOS.DESEMBOLSADO;
+    solicitud.observaciones = '';
+    
+    if (!solicitud.historial) solicitud.historial = [];
+    solicitud.historial.push({
+        area: 'Responsable - Desembolsado',
+        estado: ESTADOS.DESEMBOLSADO,
+        fecha: fechaHora.fecha,
+        hora: fechaHora.hora,
+        timestamp: fechaHora.timestamp,
+        usuario: 'Responsable de Caja'
     });
     
-    guardarEnLocalStorage(solicitudesData);
-    renderizarSolicitudesEnlace();
-    actualizarEstadisticasEnlace();
-    cerrarModal('modalAprobacionSolicitud');
+    // Guardar en todas las solicitudes
+    const todasSolicitudes = cargarDeLocalStorage();
+    const index = todasSolicitudes.findIndex(s => s.id === solicitud.id);
+    if (index !== -1) {
+        todasSolicitudes[index] = solicitud;
+        guardarEnLocalStorage(todasSolicitudes);
+    } else {
+        guardarEnLocalStorage(solicitudesData);
+    }
     
-    alert('Solicitud aprobada exitosamente. La solicitud ha avanzado a la siguiente fase.');
+    cargarDatos();
+    renderizarSolicitudesResponsable();
+    actualizarEstadisticasResponsable();
+    cerrarModalDesembolso();
+    cerrarModal('modalAprobacionSolicitud');
+    alert('Solicitud marcada como desembolsada.');
     solicitudActualId = null;
 }
 
@@ -333,6 +452,16 @@ function aprobarSolicitud() {
 function mostrarModalRechazo() {
     const solicitud = solicitudesData.find(s => s.id === solicitudActualId);
     if (!solicitud) return;
+    
+    const motivosComunes = [
+        'No cuenta con presupuesto',
+        'El concepto no se encuentra en los alcances de la caja mejor',
+        'El monto propuesto requiere ajustes'
+    ];
+    
+    const opcionesHTML = motivosComunes.map((motivo, index) => 
+        `<option value="${motivo}">${motivo}</option>`
+    ).join('');
     
     const modalHTML = `
         <div class="modal-overlay" id="modalRechazo" style="display: flex;">
@@ -346,17 +475,18 @@ function mostrarModalRechazo() {
                 </div>
                 <div class="modal-body">
                     <p style="margin-bottom: 16px; color: var(--color-text-secondary);">
-                        Estás a punto de rechazar la solicitud <strong>${solicitud.numero}</strong>.
+                        Estás a punto de rechazar la solicitud <strong>${solicitud.numero}</strong>. 
+                        Por favor selecciona o especifica el motivo del rechazo:
                     </p>
                     <div class="form-field full">
                         <label class="form-label">Motivo del rechazo</label>
-                        <div style="padding: 10px 12px; background: var(--color-background); border-radius: 6px; border: 1px solid var(--color-border); font-size: 14px; color: var(--color-text-primary);">
-                            No hay presupuesto
-                        </div>
+                        <select class="form-select" id="selectMotivoRechazo" onchange="toggleOtroMotivo()">
+                            ${opcionesHTML}
+                        </select>
                     </div>
-                    <div class="form-field full" style="margin-top: 16px;">
-                        <label class="form-label">Comentarios adicionales (opcional)</label>
-                        <textarea class="form-textarea" id="inputComentarios" placeholder="Agrega comentarios adicionales si lo deseas..." rows="3"></textarea>
+                    <div class="form-field full" id="otroMotivoContainer" style="display: none; margin-top: 12px;">
+                        <label class="form-label">Especifica el motivo</label>
+                        <textarea class="form-textarea" id="inputOtroMotivo" placeholder="Describe el motivo del rechazo..." rows="3"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -383,18 +513,27 @@ function cerrarModalRechazo() {
     }
 }
 
+// Alterna la visibilidad del campo "Otro motivo"
+function toggleOtroMotivo() {
+    const select = document.getElementById('selectMotivoRechazo');
+    const container = document.getElementById('otroMotivoContainer');
+    
+    if (select && container) {
+        container.style.display = select.value === 'Otro motivo' ? 'block' : 'none';
+    }
+}
+
 /**
  * Confirma el rechazo con el motivo seleccionado
  */
 function confirmarRechazo() {
-    const inputComentarios = document.getElementById('inputComentarios');
+    const select = document.getElementById('selectMotivoRechazo');
+    const inputOtro = document.getElementById('inputOtroMotivo');
     
-    let motivo = 'No hay presupuesto';
-    const comentarios = inputComentarios?.value.trim() || '';
+    let motivo = select?.value || 'Falta de presupuesto';
     
-    // Si hay comentarios, agregarlos al motivo
-    if (comentarios) {
-        motivo = comentarios;
+    if (motivo === 'Otro motivo') {
+        motivo = inputOtro?.value.trim() || 'Motivo no especificado';
     }
     
     if (!solicitudActualId) {
@@ -408,6 +547,12 @@ function confirmarRechazo() {
         return;
     }
     
+    if (solicitud.estado !== ESTADOS.EN_RESPONSABLE && solicitud.estado !== ESTADOS.RESPONSABLE_APROBADO) {
+        cerrarModalRechazo();
+        alert('Solo puedes rechazar solicitudes en estado EN_RESPONSABLE o aprobado para desembolso.');
+        return;
+    }
+    
     const fechaHora = obtenerFechaHoraActual();
     
     // Actualizar estado a Negado
@@ -417,18 +562,27 @@ function confirmarRechazo() {
     // Registrar en historial
     if (!solicitud.historial) solicitud.historial = [];
     solicitud.historial.push({
-        area: 'Enlace - Solicitud rechazada',
+        area: 'Responsable - Solicitud rechazada',
         estado: ESTADOS.NEGADO,
         fecha: fechaHora.fecha,
         hora: fechaHora.hora,
         timestamp: fechaHora.timestamp,
-        usuario: solicitud.aprobador || 'Enlace',
+        usuario: 'Responsable de Caja',
         observaciones: motivo
     });
     
-    guardarEnLocalStorage(solicitudesData);
-    renderizarSolicitudesEnlace();
-    actualizarEstadisticasEnlace();
+    const todasSolicitudes = cargarDeLocalStorage();
+    const index = todasSolicitudes.findIndex(s => s.id === solicitud.id);
+    if (index !== -1) {
+        todasSolicitudes[index] = solicitud;
+        guardarEnLocalStorage(todasSolicitudes);
+    } else {
+        guardarEnLocalStorage(solicitudesData);
+    }
+    
+    cargarDatos();
+    renderizarSolicitudesResponsable();
+    actualizarEstadisticasResponsable();
     cerrarModalRechazo();
     cerrarModal('modalAprobacionSolicitud');
     
@@ -440,43 +594,19 @@ function confirmarRechazo() {
  * Aprueba una solicitud directamente desde la tarjeta
  */
 function aprobarSolicitudDirecta(id) {
-    const solicitud = solicitudesData.find(s => s.id === id);
-    if (!solicitud) return;
-    
-    if (solicitud.estado !== ESTADOS.PENDIENTE) {
-        alert('Esta solicitud ya no está pendiente de aprobación.');
-        return;
-    }
-    
-    if (confirm(`¿Aprobar la solicitud ${solicitud.numero}?`)) {
-        const fechaHora = obtenerFechaHoraActual();
-        
-        solicitud.estado = ESTADOS.SOLICITUD_GERENCIA;
-        solicitud.observaciones = '';
-        
-        // Registrar en historial
-        if (!solicitud.historial) solicitud.historial = [];
-        solicitud.historial.push({
-            area: 'Enlace - Solicitud aprobada',
-            estado: ESTADOS.SOLICITUD_GERENCIA,
-            fecha: fechaHora.fecha,
-            hora: fechaHora.hora,
-            timestamp: fechaHora.timestamp,
-            usuario: solicitud.aprobador || 'Enlace'
-        });
-        
-        guardarEnLocalStorage(solicitudesData);
-        renderizarSolicitudesEnlace();
-        actualizarEstadisticasEnlace();
-        
-        alert('Solicitud aprobada exitosamente.');
-    }
+    aprobarSolicitud(id);
 }
 
 /**
  * Rechaza una solicitud directamente desde la tarjeta
  */
 function rechazarSolicitudDirecta(id) {
+    const solicitud = solicitudesData.find(s => s.id === id);
+    if (!solicitud) return;
+    if (solicitud.estado !== ESTADOS.EN_RESPONSABLE && solicitud.estado !== ESTADOS.RESPONSABLE_APROBADO) {
+        alert('Solo puedes rechazar solicitudes en estado EN_RESPONSABLE o aprobado para desembolso.');
+        return;
+    }
     solicitudActualId = id;
     mostrarModalRechazo();
 }
@@ -510,7 +640,7 @@ function crearHistorialTimeline(historial) {
             </svg>
         `;
         
-        // Usar la acción registrada en el historial (incluye contexto como "Enlace - Solicitud aprobada")
+        // Usar la acción registrada en el historial (ej. "Responsable - Desembolsado")
         const areaText = evento.area || 'Historial';
         
         return `
@@ -548,7 +678,7 @@ function crearHistorialTimeline(historial) {
 /**
  * Limpia todos los filtros y muestra todas las solicitudes
  */
-function limpiarFiltrosEnlace() {
+function limpiarFiltrosResponsable() {
     // Limpiar inputs
     const busqueda = document.getElementById('busqueda');
     const solicitante = document.getElementById('filtroSolicitante');
@@ -565,12 +695,12 @@ function limpiarFiltrosEnlace() {
     if (orden) orden.value = '';
     
     // Aplicar filtros (mostrará todas las solicitudes)
-    aplicarFiltrosEnlace();
+    aplicarFiltrosResponsable();
 }
 
 // Inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarEnlaceSolicitudes);
+    document.addEventListener('DOMContentLoaded', inicializarResponsableSolicitudes);
 } else {
-    inicializarEnlaceSolicitudes();
+    inicializarResponsableSolicitudes();
 }
